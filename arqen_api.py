@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np                                  
 from fastapi import FastAPI
 from pydantic import BaseModel
-from arqen_brain.models.arqen_brain_v1 import ArqenBrain
+from models.arqen_brain_v1 import ArqenBrain
 from sklearn.preprocessing import StandardScaler
 
 torch.serialization.add_safe_globals([StandardScaler])
@@ -21,6 +21,10 @@ model.eval()
 
 app = FastAPI(title="Arqen API", version="1.0")
 
+@app.get("/")
+def home():
+    return {"message": "Arqen Market Brain API is running ✅"}
+
 class ProjectData(BaseModel):
     project_size: float
     floors: int
@@ -31,10 +35,9 @@ class ProjectData(BaseModel):
 
 @app.post("/predict")
 def predict(data: ProjectData):
-    df = pd.DataFrame([data.dict().values()])
+    df = pd.DataFrame([data.dict()])
     X = torch.tensor(scaler_x.transform(df), dtype=torch.float32)
     with torch.no_grad():
         y_pred = model(X)
     cost = scaler_y.inverse_transform(y_pred.numpy())[0][0]
     return {"predicted_cost_usd_million": round(float(cost), 2)}
-
