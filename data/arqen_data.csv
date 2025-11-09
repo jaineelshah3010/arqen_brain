@@ -1,0 +1,6 @@
+project_size,floors,region_code,complexity,duration_months,cost_usd
+12000,10,2,0.8,14,3.5
+8500,8,1,0.5,10,1.8
+20000,15,3,0.9,20,6.7
+6000,6,1,0.3,8,1.0
+15000,12,2,0.7,16,4.2

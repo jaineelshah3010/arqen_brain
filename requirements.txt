@@ -1,0 +1,6 @@
+torch
+fastapi
+uvicorn
+pandas
+scikit-learn
+
