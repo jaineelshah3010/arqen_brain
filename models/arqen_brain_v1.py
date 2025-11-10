@@ -1,17 +1,17 @@
-import torch
 import torch.nn as nn
 
 class ArqenBrain(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_dim, hidden_size=128, output_size=1):
         super(ArqenBrain, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(hidden_size, output_size)
+        self.layers = nn.Sequential(
+            nn.Linear(input_dim, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size // 2),
+            nn.ReLU(),
+            nn.Linear(hidden_size // 2, hidden_size // 4),
+            nn.ReLU(),
+            nn.Linear(hidden_size // 4, output_size)
+        )
 
     def forward(self, x):
-        out = self.fc1(x)
-        out = self.relu(out)
-        out = self.fc2(out)
-        return out
-
-        
+        return self.layers(x)
