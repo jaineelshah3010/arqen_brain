@@ -23,7 +23,7 @@ app = FastAPI(title="Arqen API", version="1.0")
 
 @app.get("/")
 def home():
-    return {"message": "Arqen Market Brain API is running ✅"}
+    return {"message": "Arqen Market Brain API is running"}
 
 class ProjectData(BaseModel):
     project_size: float
