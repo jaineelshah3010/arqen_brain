@@ -6,6 +6,17 @@ from pydantic import BaseModel
 from models.arqen_brain_v1 import ArqenBrain
 from sklearn.preprocessing import StandardScaler
 
+tags_metadata = [
+    {"name": "Root", "description": "Health and status of the Arqen API"},
+    {"name": "Prediction", "description": "Predict project cost using the trained Market Brain model"},
+]
+
+app = FastAPI(
+    title="Arqen Market Brain API",
+    version="1.0",
+    openapi_tags=tags_metadata
+)
+
 torch.serialization.add_safe_globals([StandardScaler])
 torch.serialization.add_safe_globals([np._core.multiarray.scalar])
 
@@ -19,11 +30,9 @@ model = ArqenBrain(input_dim, hidden_size=64, output_size=1)   # ✅ fixed line
 model.load_state_dict(model_state)
 model.eval()
 
-app = FastAPI(title="Arqen API", version="1.0")
-
-@app.get("/")
+@app.get("/", tags=["Root"])
 def home():
-    return {"message": "Arqen Market Brain API is running"}
+    return {"message": "Arqen Market Brain API is running ✅"}
 
 class ProjectData(BaseModel):
     project_size: float
@@ -32,8 +41,18 @@ class ProjectData(BaseModel):
     complexity: float
     duration_months: float
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "project_size": 12000,
+                "floors": 10,
+                "region_code": 2,
+                "complexity": 0.7,
+                "duration_months": 14
+            }
+        }
 
-@app.post("/predict")
+@app.post("/predict", tags=["Prediction"])
 def predict(data: ProjectData):
     df = pd.DataFrame([data.dict()])
     X = torch.tensor(scaler_x.transform(df), dtype=torch.float32)
