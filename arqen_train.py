@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-from arqen_brain.models.arqen_brain_v1 import ArqenBrain
+from models.arqen_brain_v1 import ArqenBrain
 
 df = pd.read_csv('data/arqen_data.csv')
-X = df.drop("cost_usd", axis=1).values
-y = df["cost_usd"].values.reshape(-1,1)
+X = df[["project_size", "floors", "region_code", "complexity", "duration_months"]].values
+y = df["cost"].values.reshape(-1, 1)
 
 scaler_x = StandardScaler()
 scaler_y = StandardScaler()
@@ -38,21 +38,3 @@ torch.save({
 }, 'arqen_model.pth')
 
 print("Arqen Brain trained and saved successfully.")
-
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-
-# --- Evaluate Model Accuracy ---
-model.eval()
-with torch.no_grad():
-    predictions = model(X)
-    predictions = scaler_y.inverse_transform(predictions.numpy())
-    true_values = scaler_y.inverse_transform(y.numpy())
-
-mse = mean_squared_error(true_values, predictions)
-mae = mean_absolute_error(true_values, predictions)
-r2 = r2_score(true_values, predictions)
-
-print("\n📊 Model Accuracy on Training Data:")
-print(f"Mean Squared Error (MSE): {mse:.4f}")
-print(f"Mean Absolute Error (MAE): {mae:.4f}")
-print(f"R² Score: {r2:.4f}")
