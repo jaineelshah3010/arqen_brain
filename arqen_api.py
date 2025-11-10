@@ -2,6 +2,7 @@ import torch
 import pandas as pd
 import numpy as np                                  
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from models.arqen_brain_v1 import ArqenBrain
 from sklearn.preprocessing import StandardScaler
@@ -15,6 +16,14 @@ app = FastAPI(
     title="Arqen Market Brain API",
     version="1.0",
     openapi_tags=tags_metadata
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or ["https://arqen-ai.vercel.app"] for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 torch.serialization.add_safe_globals([StandardScaler])
@@ -32,7 +41,7 @@ model.eval()
 
 @app.get("/", tags=["Root"])
 def home():
-    return {"message": "Arqen Market Brain API is running ✅"}
+    return {"message": "Arqen Market Brain API is running"}
 
 class ProjectData(BaseModel):
     project_size: float
