@@ -1,5 +1,5 @@
 import torch
-from arqen_brain.models.arqen_brain_v1 import ArqenBrain
+from models.arqen_brain_v1 import ArqenBrain
 
 checkpoint = torch.load("arqen_model.pth", map_location="cpu", weights_only=False)
 print(checkpoint.keys())  # should show model_state, scaler_x, scaler_y
